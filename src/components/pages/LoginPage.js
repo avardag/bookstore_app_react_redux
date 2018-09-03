@@ -9,7 +9,7 @@ class  LoginPage extends Component{
   
   submit = (loginData) =>{
     //login action from redux store to dispatch login credentials
-    this.props.login(loginData).then(()=>this.props.history.push("/"))
+    return this.props.login(loginData).then(()=>this.props.history.push("/"))
   }
 
   render() {

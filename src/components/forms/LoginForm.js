@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Form, Button } from "semantic-ui-react";
+import { Form, Button, Message } from "semantic-ui-react";
 import Validator from "validator";
 import PropTypes from 'prop-types';
 
@@ -21,11 +21,18 @@ class LoginForm extends Component {
     });
 
   onFormSubmit = () => {
+
     const errors = this.validate(this.state.data);
     this.setState({ errors });
     //check if errors obj is empty, if not submit data
     if (Object.keys(errors).length === 0) {
-      this.props.submit(this.state.data);
+      this.setState({loading: true})
+      this.props.submit(this.state.data)
+      //catch errs from API
+      .catch(err=>this.setState({
+        errors: err.response.data.error,
+        loading: false
+      }))
     }
   };
 
@@ -38,9 +45,16 @@ class LoginForm extends Component {
   };
 
   render() {
-    const { data, errors } = this.state;
+    const { data, errors, loading } = this.state;
+    console.log('loading', loading);
     return (
-      <Form onSubmit={this.onFormSubmit}>
+      <Form onSubmit={this.onFormSubmit} loading={loading}>
+        { errors.global ?(
+          <Message negative>
+            <Message.Header>Something went wrong</Message.Header>
+            <p>{ errors.global }</p>
+          </Message>
+        ) : null }
         <Form.Field error={!!errors.email}>
           <label htmlFor="email">Email:</label>
           <input
